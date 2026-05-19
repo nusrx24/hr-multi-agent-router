@@ -1,0 +1,101 @@
+Project Overview: You'll be developing a multi-agent task routing and memory engine for an HR automation platform, using a central Orchestrator Agent to route natural language requests to specialist sub-agents.
+
+ 
+
+Technical Requirements:  
+
+ 
+
+1. Backend Stack  
+
+•   Python 3.11+  
+
+•   FastAPI framework implementation  
+
+•   Langgraph  
+
+•   SQLite database integration  
+
+•   LLM APIs/Open-Source Models  
+
+•   Environment configuration using a .env file 
+
+2. Core Functionality REST API endpoints for:   
+
+•   Request handling   
+
+•   Audit retrieval   
+
+•   Memory management   
+
+•   Health monitoring   
+
+Automated orchestration system for:
+
+•   Intent classification with confidence scores   
+
+•   Routing classified intents to appropriate sub-agents (Scheduling, Leave, Compliance, and Clarification)   
+
+•   Memory retrieval to inject historical context into agent prompts   
+
+•   Comprehensive audit logging system   
+
+3. System Modules in Intent Classification Engine  
+
+•   Agent Router & Sub-Agent Stubs  
+
+•   Two-tier Memory System (STM and LTM)  
+
+•   Append-only Audit Log
+
+4. Evaluation Criteria We will assess:  
+
+•   Working System:
+
+Server starts and pipeline executes end-to-end   
+
+All 5 endpoints respond correctly   
+
+•   Code Quality:
+
+Modular design and separation of concerns   
+
+Type annotations and docstrings   
+
+•   Agent Architecture:
+
+Clean agent boundaries   
+
+Context injection, retry, and timeout logic   
+
+•   Memory System:
+
+STM and LTM functionality   
+
+Sound and justified significance scoring logic   
+
+•   Audit Log:
+
+Append-only enforcement and presence of required fields   
+
+•   Bug Finding & Fixes:
+
+Identification and correction of starter-code bugs   
+
+•   Report:
+
+Explanation and honesty about trade-offs   
+
+Please ensure your system includes appropriate fallback handling for uncertain requests and handles failures politely without exposing raw Python stack traces. Please use mock data for testing.
+
+ 
+
+Submission Guidelines:   
+
+•   Share your code through a ZIP archive   Or Include a GitHub repository link  
+
+•   Include a Technical Report with all necessary documentation   
+
+•   Add setup instructions for local development 
+
+•  Deadline: Submit by or before SATURDAY MAY 23RD , 2026

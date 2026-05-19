@@ -1,0 +1,26 @@
+# HR Multi-Agent Routing Engine Tasks
+
+- [ ] **Phase 1: Project Initialization & Configuration**
+  - [ ] Initialize Git repository.
+  - [ ] Set up virtual environment and install dependencies (`fastapi`, `uvicorn`, `langgraph`, `langchain-groq`, `pydantic`, `sqlite3`).
+  - [ ] Create `.env` template and configuration loader.
+- [ ] **Phase 2: Database Layer**
+  - [ ] Implement `database.py` with SQLite schema.
+  - [ ] Create `AuditLog` table (append-only).
+  - [ ] Create `Memory` table (STM / LTM).
+  - [ ] Implement DB CRUD utilities and significance scoring logic for LTM.
+- [ ] **Phase 3: Multi-Agent Orchestration (LangGraph)**
+  - [ ] Define `AgentState` schema.
+  - [ ] Implement Orchestrator node (Intent routing & Memory injection).
+  - [ ] Implement Sub-Agent stubs (Scheduling, Leave, Compliance, Clarification).
+  - [ ] Wire LangGraph nodes and conditional edges.
+- [ ] **Phase 4: API Layer (FastAPI)**
+  - [ ] Implement `POST /api/v1/request`
+  - [ ] Implement `GET /api/v1/audit`
+  - [ ] Implement `GET /api/v1/memory`
+  - [ ] Implement `GET /api/v1/health`
+  - [ ] Implement polite fallback error handling.
+- [ ] **Phase 5: Finalization**
+  - [ ] Populate mock data (`mock_data.py`).
+  - [ ] Write `README.md` with setup instructions.
+  - [ ] Draft Technical Report.
