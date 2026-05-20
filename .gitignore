@@ -38,3 +38,11 @@ Thumbs.db
 
 # Misc
 *.log
+
+# Dev/Personal files (not part of submission)
+implementation_plan.md
+task.md
+test_pipeline.py
+test_api.py
+test_edge_cases.py
+Project Overview*

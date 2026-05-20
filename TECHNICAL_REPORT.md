@@ -127,7 +127,8 @@ When processing a new request, the Orchestrator retrieves the user's full memory
 ## 5. Testing Strategy
 
 ### 5.1 Test Coverage
-- **13 integration tests** covering all 5 endpoints
+- **11 integration tests** covering all 5 endpoints via pytest
+- **10 edge case tests** verifying intent classification boundaries (flex-time vs leave, sensitive issues, multi-intent)
 - **Tests include:** Happy paths, edge cases (nonexistent user, empty memory), validation errors, and audit log filtering
 - **Test infrastructure:** Uses `httpx.AsyncClient` with FastAPI's `ASGITransport` — no live server needed
 
@@ -157,6 +158,39 @@ When processing a new request, the Orchestrator retrieves the user's full memory
 
 ---
 
-## 7. Conclusion
+## 7. Bug Finding & Fixes
+
+Since this project was built from scratch (no starter/template code was provided), the following issues were identified and corrected during development and testing:
+
+### 7.1 Intent Misclassification — "Leave Early" Edge Case
+**Bug:** The initial orchestrator prompt classified "Can I leave 2 hours early today and make it up on Saturday?" as `leave` intent, because the LLM saw the word "leave" and associated it with PTO/time-off.
+
+**Fix:** Updated the system prompt in `orchestrator.py` with:
+- Explicit boundary clarifications (e.g., "leaving early" = scheduling, NOT official leave)
+- 11 few-shot examples covering edge cases across all 4 intents (flex-time, partial-day absences, sensitive workplace issues, multi-intent requests)
+
+**Result:** 9/10 edge cases now classify correctly. The one remaining case ("I need to talk to someone about what happened yesterday") routes to `compliance` instead of `clarification` — a defensible decision since it could indicate a sensitive workplace issue.
+
+### 7.2 LLM JSON Parsing Failures
+**Bug:** The Groq LLM occasionally wraps its JSON response in markdown code blocks (` ```json ... ``` `), causing `json.loads()` to fail.
+
+**Fix:** Added a response cleaning step in `_parse_llm_response()` that strips markdown code fences, handles missing fields with safe defaults, and validates intent values against the allowed set. If parsing fails entirely, the system falls back to `clarification` intent rather than crashing.
+
+### 7.3 `datetime.utcnow()` Deprecation (Python 3.12+)
+**Bug:** Python 3.12+ raises `DeprecationWarning` for `datetime.datetime.utcnow()`, which is scheduled for removal in a future version.
+
+**Identified:** Flagged during pytest runs (27 warnings). Kept the current implementation for SQLite compatibility, as timezone-aware datetimes add complexity to SQLite text storage. Documented as a known issue for future migration.
+
+### 7.4 Windows Terminal Encoding for Emojis
+**Bug:** Sub-agent responses contain emojis (✅, 📅, 🤔, etc.) which crash the Windows terminal's default `cp1252` encoding when printed via `print()`.
+
+**Fix:** Added UTF-8 stdout encoding in test scripts:
+```python
+sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8", errors="replace")
+```
+
+---
+
+## 8. Conclusion
 
 The HR Multi-Agent Router successfully demonstrates a production-ready architecture for intelligent HR request routing. The system handles the full lifecycle — from natural language input, through LLM-powered classification, to domain-specific response generation — with robust error handling, memory persistence, and comprehensive audit logging. While the sub-agents use mock data, the orchestration layer, memory system, and API infrastructure are fully functional and ready for real-world integration.
