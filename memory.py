@@ -20,9 +20,6 @@ from models import MemoryEntry, MemoryType
 logger = logging.getLogger(__name__)
 settings = get_settings()
 
-
-# ── Significance Scoring ──────────────────────────────────────
-
 # Keywords and patterns that indicate high-significance information.
 # These are facts about the user or organization that would be useful
 # for future interactions — stored as LTM.
@@ -107,25 +104,19 @@ def calculate_significance_score(text: str) -> float:
 
     scores: list[float] = []
 
-    # ── 1. Keyword Matching ──
     for keyword, weight in HIGH_SIGNIFICANCE_KEYWORDS.items():
         if keyword in text_lower:
             scores.append(weight)
 
-    # ── 2. Pattern Matching ──
     for pattern, weight in FACT_PATTERNS:
         if re.search(pattern, text_lower):
             scores.append(weight)
 
-    # ── 3. Length Heuristic ──
-    # Very short messages (< 20 chars) are likely greetings or acknowledgments
     if len(text_lower) < 20:
         scores.append(0.1)
     elif len(text_lower) > 100:
-        # Longer messages more likely contain useful context
         scores.append(0.3)
 
-    # ── Calculate Final Score ──
     if not scores:
         # Default score for unmatched content
         return 0.25
@@ -153,8 +144,6 @@ def classify_memory_type(significance_score: float) -> MemoryType:
         return MemoryType.LTM
     return MemoryType.STM
 
-
-# ── Public API ─────────────────────────────────────────────────
 
 
 async def store_memory(user_id: str, content: str) -> MemoryEntry:

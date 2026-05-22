@@ -20,7 +20,6 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 
-# ── Sample Memory Data ─────────────────────────────────────────
 
 SAMPLE_MEMORIES = [
     # User 001 — Engineering Manager in New York
@@ -37,7 +36,6 @@ SAMPLE_MEMORIES = [
     {"user_id": "user_003", "content": "I am based in the San Francisco office"},
 ]
 
-# ── Sample Requests ────────────────────────────────────────────
 
 SAMPLE_REQUESTS = [
     {"user_id": "user_001", "request_text": "Schedule a team standup for tomorrow at 9am"},

@@ -26,16 +26,12 @@ from memory import retrieve_context, store_memory
 logger = logging.getLogger(__name__)
 settings = get_settings()
 
-# ── LLM Initialization ────────────────────────────────────────
-
 llm = ChatGroq(
     api_key=settings.groq_api_key,
     model_name=settings.model_name,
     temperature=0.1,  # Low temperature for consistent classification
     max_tokens=1024,
 )
-
-# ── System Prompt ──────────────────────────────────────────────
 
 ORCHESTRATOR_SYSTEM_PROMPT = """You are an HR Orchestrator Agent. Your job is to:
 1. Classify the user's HR request into one of these intents:
@@ -77,9 +73,6 @@ Response format:
 }"""
 
 
-# ── Orchestrator Node ──────────────────────────────────────────
-
-
 async def orchestrator_node(state: AgentState) -> dict[str, Any]:
     """
     Main orchestrator node in the LangGraph pipeline.
@@ -100,19 +93,14 @@ async def orchestrator_node(state: AgentState) -> dict[str, Any]:
     logger.info("Orchestrator processing request from user=%s", user_id)
 
     try:
-        # ── Step 1: Retrieve Memory Context ──
         memory_context = await retrieve_context(user_id)
 
-        # ── Step 2: Build the Prompt ──
         user_prompt = _build_user_prompt(request_text, memory_context)
 
-        # ── Step 3: Call LLM with Retry Logic ──
         result = await _call_llm_with_retry(user_prompt)
 
-        # ── Step 4: Parse the Response ──
         parsed = _parse_llm_response(result)
 
-        # ── Step 5: Apply Confidence Threshold ──
         intent = parsed["intent"]
         confidence = parsed["confidence"]
 
@@ -124,13 +112,10 @@ async def orchestrator_node(state: AgentState) -> dict[str, Any]:
                 settings.confidence_threshold,
             )
 
-        # ── Step 6: Determine Sub-Agent ──
         sub_agent = _get_sub_agent_name(intent)
 
-        # ── Step 7: Store Request in Memory ──
         await store_memory(user_id, request_text)
 
-        # ── Step 8: Store Extracted Facts ──
         extracted_facts = parsed.get("extracted_facts", [])
         for fact in extracted_facts:
             if fact and fact.strip():
@@ -162,9 +147,6 @@ async def orchestrator_node(state: AgentState) -> dict[str, Any]:
             "extracted_facts": [],
             "error": str(e),
         }
-
-
-# ── Helper Functions ───────────────────────────────────────────
 
 
 def _build_user_prompt(request_text: str, memory_context: str) -> str:

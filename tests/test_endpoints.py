@@ -22,8 +22,6 @@ async def client():
         yield ac
 
 
-# ── Health Endpoint ────────────────────────────────────────────
-
 
 @pytest.mark.asyncio
 async def test_health_endpoint(client):
@@ -36,9 +34,6 @@ async def test_health_endpoint(client):
     assert "timestamp" in data
 
 
-# ── Root Endpoint ──────────────────────────────────────────────
-
-
 @pytest.mark.asyncio
 async def test_root_endpoint(client):
     """GET / should return service info with all endpoint paths."""
@@ -49,8 +44,6 @@ async def test_root_endpoint(client):
     assert "endpoints" in data
     assert len(data["endpoints"]) == 5
 
-
-# ── Request Endpoint ──────────────────────────────────────────
 
 
 @pytest.mark.asyncio
@@ -115,9 +108,6 @@ async def test_request_endpoint_validation(client):
     assert response.status_code == 422
 
 
-# ── Audit Endpoint ─────────────────────────────────────────────
-
-
 @pytest.mark.asyncio
 async def test_audit_endpoint(client):
     """GET /api/v1/audit should return paginated audit entries."""
@@ -161,9 +151,6 @@ async def test_audit_endpoint_filter_by_user(client):
     data = response.json()
     for entry in data["entries"]:
         assert entry["user_id"] == "audit_test_user"
-
-
-# ── Memory Endpoint ───────────────────────────────────────────
 
 
 @pytest.mark.asyncio

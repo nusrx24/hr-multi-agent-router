@@ -14,12 +14,12 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
+from fastapi.staticfiles import StaticFiles
 
 from config import get_settings
 from database import init_db
 from routers.api import router as api_router
 
-# ── Logging Setup ──────────────────────────────────────────────
 
 logging.basicConfig(
     level=logging.INFO,
@@ -28,9 +28,6 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 settings = get_settings()
-
-
-# ── Lifespan (Startup / Shutdown) ──────────────────────────────
 
 
 @asynccontextmanager
@@ -42,8 +39,6 @@ async def lifespan(app: FastAPI):
     yield
     logger.info("Shutting down HR Multi-Agent Router.")
 
-
-# ── FastAPI App ────────────────────────────────────────────────
 
 app = FastAPI(
     title="HR Multi-Agent Router",
@@ -57,8 +52,6 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
-# ── CORS Middleware ────────────────────────────────────────────
-
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -67,12 +60,9 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# ── Include API Router ─────────────────────────────────────────
-
 app.include_router(api_router)
 
-
-# ── Global Exception Handler ──────────────────────────────────
+app.mount("/dashboard", StaticFiles(directory="static", html=True), name="dashboard")
 
 
 @app.exception_handler(Exception)
@@ -104,16 +94,21 @@ async def global_exception_handler(request: Request, exc: Exception):
     )
 
 
-# ── Root Endpoint ──────────────────────────────────────────────
-
-
 @app.get("/", tags=["Root"])
 async def root():
-    """Root endpoint with API information."""
+    """Root endpoint — redirects to the interactive dashboard."""
+    from fastapi.responses import RedirectResponse
+    return RedirectResponse(url="/dashboard")
+
+
+@app.get("/api/v1/info", tags=["Root"])
+async def api_info():
+    """API information and available endpoints."""
     return {
         "service": "HR Multi-Agent Router",
         "version": "1.0.0",
         "docs": "/docs",
+        "dashboard": "/dashboard",
         "endpoints": {
             "process_request": "POST /api/v1/request",
             "audit_logs": "GET /api/v1/audit",
@@ -124,7 +119,6 @@ async def root():
     }
 
 
-# ── Run with Uvicorn ───────────────────────────────────────────
 
 if __name__ == "__main__":
     import uvicorn

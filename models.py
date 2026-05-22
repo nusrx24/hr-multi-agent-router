@@ -12,8 +12,6 @@ from typing import Optional
 from pydantic import BaseModel, Field
 
 
-# ── Enums ──────────────────────────────────────────────────────
-
 
 class IntentType(str, Enum):
     """Supported HR intent categories."""
@@ -29,9 +27,6 @@ class MemoryType(str, Enum):
 
     STM = "stm"  # Short-Term Memory — recent conversation turns
     LTM = "ltm"  # Long-Term Memory — significant extracted facts
-
-
-# ── API Request / Response Models ──────────────────────────────
 
 
 class HRRequest(BaseModel):
@@ -61,8 +56,6 @@ class HRResponse(BaseModel):
     timestamp: datetime = Field(default_factory=datetime.utcnow)
 
 
-# ── Audit Log Models ──────────────────────────────────────────
-
 
 class AuditLogEntry(BaseModel):
     """A single audit log record. Append-only — never updated or deleted."""
@@ -86,8 +79,6 @@ class AuditLogResponse(BaseModel):
     limit: int
     entries: list[AuditLogEntry]
 
-
-# ── Memory Models ─────────────────────────────────────────────
 
 
 class MemoryEntry(BaseModel):
@@ -113,8 +104,6 @@ class UserMemoryResponse(BaseModel):
     stm: list[MemoryEntry] = []
     ltm: list[MemoryEntry] = []
 
-
-# ── Health Check ──────────────────────────────────────────────
 
 
 class HealthResponse(BaseModel):

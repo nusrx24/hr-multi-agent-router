@@ -16,12 +16,7 @@ from models import AuditLogEntry, MemoryEntry, MemoryType
 logger = logging.getLogger(__name__)
 settings = get_settings()
 
-# ── Database Path ──────────────────────────────────────────────
-
 DB_PATH = settings.database_url
-
-
-# ── Schema Initialization ─────────────────────────────────────
 
 
 async def init_db() -> None:
@@ -33,8 +28,6 @@ async def init_db() -> None:
         - memory: Two-tier memory system (STM for recent turns, LTM for facts).
     """
     async with aiosqlite.connect(DB_PATH) as db:
-        # ── Audit Log Table (APPEND-ONLY) ──
-        # No UPDATE or DELETE operations are ever exposed for this table.
         await db.execute("""
             CREATE TABLE IF NOT EXISTS audit_log (
                 id          INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -49,7 +42,6 @@ async def init_db() -> None:
             )
         """)
 
-        # ── Memory Table (STM / LTM) ──
         await db.execute("""
             CREATE TABLE IF NOT EXISTS memory (
                 id                  INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -61,7 +53,6 @@ async def init_db() -> None:
             )
         """)
 
-        # ── Indexes for fast lookups ──
         await db.execute(
             "CREATE INDEX IF NOT EXISTS idx_audit_user ON audit_log(user_id)"
         )
@@ -74,9 +65,6 @@ async def init_db() -> None:
 
         await db.commit()
         logger.info("Database initialized successfully at %s", DB_PATH)
-
-
-# ── Audit Log CRUD (Append-Only) ──────────────────────────────
 
 
 async def insert_audit_log(entry: AuditLogEntry) -> int:
@@ -173,8 +161,6 @@ async def get_audit_logs(
 
         return entries, total
 
-
-# ── Memory CRUD ────────────────────────────────────────────────
 
 
 async def insert_memory(entry: MemoryEntry) -> int:

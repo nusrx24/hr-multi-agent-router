@@ -32,9 +32,6 @@ from models import AuditLogEntry
 logger = logging.getLogger(__name__)
 
 
-# ── Audit Logger Node ──────────────────────────────────────────
-
-
 async def audit_logger_node(state: AgentState) -> dict[str, Any]:
     """
     Final node in the pipeline. Records the complete transaction
@@ -66,9 +63,6 @@ async def audit_logger_node(state: AgentState) -> dict[str, Any]:
     return {}
 
 
-# ── Router Function ────────────────────────────────────────────
-
-
 def route_to_sub_agent(state: AgentState) -> str:
     """
     Conditional routing function for LangGraph.
@@ -96,9 +90,6 @@ def route_to_sub_agent(state: AgentState) -> str:
     return destination
 
 
-# ── Graph Construction ─────────────────────────────────────────
-
-
 def build_graph() -> StateGraph:
     """
     Construct and compile the LangGraph state machine.
@@ -112,7 +103,6 @@ def build_graph() -> StateGraph:
     # Define the graph with AgentState as the shared state
     graph = StateGraph(AgentState)
 
-    # ── Add Nodes ──
     graph.add_node("orchestrator", orchestrator_node)
     graph.add_node("scheduling_agent", scheduling_agent_node)
     graph.add_node("leave_agent", leave_agent_node)
@@ -120,10 +110,8 @@ def build_graph() -> StateGraph:
     graph.add_node("clarification_agent", clarification_agent_node)
     graph.add_node("audit_logger", audit_logger_node)
 
-    # ── Set Entry Point ──
     graph.set_entry_point("orchestrator")
 
-    # ── Add Conditional Edge (Router) ──
     graph.add_conditional_edges(
         "orchestrator",
         route_to_sub_agent,
@@ -135,7 +123,6 @@ def build_graph() -> StateGraph:
         },
     )
 
-    # ── Sub-Agents → Audit Logger → END ──
     graph.add_edge("scheduling_agent", "audit_logger")
     graph.add_edge("leave_agent", "audit_logger")
     graph.add_edge("compliance_agent", "audit_logger")
@@ -146,8 +133,6 @@ def build_graph() -> StateGraph:
     return graph
 
 
-# ── Compiled Graph (Singleton) ─────────────────────────────────
-
 _compiled_graph = None
 
 
@@ -157,9 +142,6 @@ def get_compiled_graph():
     if _compiled_graph is None:
         _compiled_graph = build_graph().compile()
     return _compiled_graph
-
-
-# ── Public API ─────────────────────────────────────────────────
 
 
 async def run_pipeline(user_id: str, request_text: str) -> dict:

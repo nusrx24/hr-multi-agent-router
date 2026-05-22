@@ -31,9 +31,6 @@ logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/api/v1", tags=["HR Multi-Agent Router"])
 
 
-# ── POST /request ──────────────────────────────────────────────
-
-
 @router.post(
     "/request",
     response_model=HRResponse,
@@ -67,9 +64,6 @@ async def process_request(request: HRRequest) -> HRResponse:
     )
 
 
-# ── GET /audit ─────────────────────────────────────────────────
-
-
 @router.get(
     "/audit",
     response_model=AuditLogResponse,
@@ -94,9 +88,6 @@ async def get_audit(
     )
 
 
-# ── GET /memory/{user_id} ─────────────────────────────────────
-
-
 @router.get(
     "/memory/{user_id}",
     response_model=UserMemoryResponse,
@@ -115,9 +106,6 @@ async def get_memory(user_id: str) -> UserMemoryResponse:
     return UserMemoryResponse(user_id=user_id, stm=stm, ltm=ltm)
 
 
-# ── DELETE /memory/{user_id} ───────────────────────────────────
-
-
 @router.delete(
     "/memory/{user_id}",
     summary="Clear user STM",
@@ -134,9 +122,6 @@ async def delete_user_stm(user_id: str) -> dict:
         "user_id": user_id,
         "deleted_count": deleted_count,
     }
-
-
-# ── GET /health ────────────────────────────────────────────────
 
 
 @router.get(

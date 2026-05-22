@@ -18,19 +18,15 @@ class Settings(BaseSettings):
         case_sensitive=False,
     )
 
-    # ── LLM Configuration ──────────────────────────────────────
     groq_api_key: str = "gsk_placeholder"
     model_name: str = "llama-3.3-70b-versatile"
 
-    # ── Database ───────────────────────────────────────────────
     database_url: str = "hr_engine.db"
 
-    # ── Server ─────────────────────────────────────────────────
     host: str = "0.0.0.0"
     port: int = 8000
     debug: bool = True
 
-    # ── Agent Thresholds ───────────────────────────────────────
     confidence_threshold: float = 0.4
     """Requests with confidence below this value route to ClarificationAgent."""
 
